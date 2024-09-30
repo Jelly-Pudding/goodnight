@@ -1,0 +1,12 @@
+name: goodnight
+version: '1.0-SNAPSHOT'
+main: com.jellypudding.goodnight.GoodnightPlugin
+api-version: '1.21'
+
+commands:
+  goodnight:
+    description: "Players can say goodnight to vote for daytime."
+    usage: "/goodnight"
+    aliases: [gn]
+    permission: goodnight.use
+    permission-message: "You can't sleep yet. Maybe try counting some sheep!"

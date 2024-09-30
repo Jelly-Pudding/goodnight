@@ -1,0 +1,4 @@
+# Configuration file for the Goodnight plugin
+
+# Percentage of players needed to sleep to change the time (0-100)
+sleep-percentage: 33.0

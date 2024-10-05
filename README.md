@@ -7,10 +7,10 @@
 3. Restart your server.
 
 ## Configuration
-In `config.yml`, set the percentage of players required to skip the night (default is 33%):
+In `config.yml`, set the percentage of players required to skip the night (default is 66.6%):
 
 ```yaml
-sleep-percentage: 33.0
+sleep-percentage: 66.6
 ```
 
 ## Commands

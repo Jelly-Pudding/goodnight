@@ -1,5 +1,5 @@
 name: Goodnight
-version: '1.0.0'
+version: '1.0.1'
 main: com.jellypudding.goodnight.GoodnightPlugin
 api-version: '1.21'
 description: "Allows players to vote for skipping the night by saying /goodnight."

@@ -28,7 +28,7 @@ public final class GoodnightPlugin extends JavaPlugin implements Listener {
         saveDefaultConfig();
         loadConfigValues();
         getServer().getPluginManager().registerEvents(this, this);
-        getLogger().info("Goodnight plugin has been enabled. Sweet dreams!");
+        getLogger().info("Goodnight plugin has been enabled.");
     }
 
     @Override
@@ -39,6 +39,13 @@ public final class GoodnightPlugin extends JavaPlugin implements Listener {
     private void loadConfigValues() {
         FileConfiguration config = this.getConfig();
         sleepPercentage = config.getDouble("sleep-percentage", 66.6) / 100;  // Convert to decimal
+    }
+
+    private World getOverworld() {
+        return Bukkit.getWorlds().stream()
+                .filter(world -> world.getEnvironment() == World.Environment.NORMAL)
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -65,7 +72,7 @@ public final class GoodnightPlugin extends JavaPlugin implements Listener {
                 Component message = createGoodnightMessage(player, customMessage, sleepData);
                 Bukkit.getServer().broadcast(message);
 
-                updateTimeIfNeeded(overworld, sleepData[0], sleepData[1], false);
+                updateTimeIfNeeded(overworld, sleepData[0], sleepData[1], false, null);
             } else {
                 player.sendMessage(Component.text("You have already said goodnight!", NamedTextColor.RED));
             }
@@ -99,10 +106,10 @@ public final class GoodnightPlugin extends JavaPlugin implements Listener {
     private @NotNull Component getDefaultInfoMessage(int totalPlayers, int sleepingPlayers, int requiredPlayers) {
         int morePlayersNeeded = Math.max(0, requiredPlayers - sleepingPlayers);
         if (morePlayersNeeded > 0) {
-            double currentPercentage = totalPlayers > 0 ? (double) sleepingPlayers / totalPlayers * 100 : 0;
-            double requiredPercentage = sleepPercentage * 100;
-            return Component.text(String.format(" (%d more needed to make it day, %.1f%% / %.1f%%)",
-                    morePlayersNeeded, currentPercentage, requiredPercentage), NamedTextColor.GRAY);
+            double currentPercentage = totalPlayers > 0 ?
+                    ((double) sleepingPlayers / totalPlayers) / sleepPercentage * 100 : 0;
+            return Component.text(String.format(" (%d more needed to make it day, %.1f%% / 100%%)",
+                    morePlayersNeeded, currentPercentage), NamedTextColor.GRAY);
         } else {
             return Component.text(" (Making it ", NamedTextColor.WHITE)
                     .append(Component.text("day", NamedTextColor.GREEN))
@@ -110,7 +117,7 @@ public final class GoodnightPlugin extends JavaPlugin implements Listener {
         }
     }
 
-    private void updateTimeIfNeeded(World overworld, int totalPlayers, int sleepingPlayers, boolean isPlayerLeaveEvent) {
+    private void updateTimeIfNeeded(World overworld, int totalPlayers, int sleepingPlayers, boolean isPlayerLeaveEvent, Player leavePlayer) {
         if (totalPlayers > 0 && (double) sleepingPlayers / totalPlayers >= sleepPercentage) {
             long currentTime = overworld.getTime();
             long timeInDay = currentTime % 24000;
@@ -120,9 +127,11 @@ public final class GoodnightPlugin extends JavaPlugin implements Listener {
 
             overworld.setTime(newTime);
 
-            if (isPlayerLeaveEvent) {
+            if (isPlayerLeaveEvent && leavePlayer != null) {
                 double percentageNeeded = sleepPercentage * 100;
-                Component message = Component.text("A player left and made it morning! ", NamedTextColor.WHITE)
+                Component message = Component.text("", NamedTextColor.WHITE)
+                        .append(leavePlayer.displayName())
+                        .append(Component.text(" left and made it morning! ", NamedTextColor.WHITE))
                         .append(Component.text(String.format("(%.1f%% needed, %d/%d players voted)",
                                 percentageNeeded, sleepingPlayers, totalPlayers), NamedTextColor.GRAY));
                 Bukkit.getServer().broadcast(message);
@@ -134,7 +143,7 @@ public final class GoodnightPlugin extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        boolean wasPlayerSleeping = playersWhoSlept.remove(player);
+        playersWhoSlept.remove(player);
 
         // Delay the sleep check by 1 tick to ensure the player is fully disconnected
         Bukkit.getScheduler().runTask(this, () -> {
@@ -152,16 +161,9 @@ public final class GoodnightPlugin extends JavaPlugin implements Listener {
                 double currentSleepPercentage = sleepData[0] > 0 ? (double) sleepData[1] / sleepData[0] : 0;
 
                 if (currentSleepPercentage >= sleepPercentage) {
-                    updateTimeIfNeeded(overworld, sleepData[0], sleepData[1], true);
+                    updateTimeIfNeeded(overworld, sleepData[0], sleepData[1], true, player);
                 }
             }
         });
-    }
-
-    private World getOverworld() {
-        return Bukkit.getWorlds().stream()
-                .filter(world -> world.getEnvironment() == World.Environment.NORMAL)
-                .findFirst()
-                .orElse(null);
     }
 }

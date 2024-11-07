@@ -17,4 +17,8 @@ sleep-percentage: 66.6
 - `/goodnight [custom message]`: Announces that a player is ready to skip the night. A custom message can be optionally added.
 
 ## Support Me
-Donations to my [Patreon](https://www.patreon.com/lolwhatyesme) will help with the development of this project.
+Donations will help me with the development of this project.
+
+One-off donation: https://ko-fi.com/lolwhatyesme
+
+Patreon: https://www.patreon.com/lolwhatyesme

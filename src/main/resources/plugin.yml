@@ -1,9 +1,10 @@
 name: Goodnight
-version: '1.0.3'
+version: '1.0.4'
 main: com.jellypudding.goodnight.GoodnightPlugin
 api-version: '1.21'
 description: "Allows players to vote for skipping the night by saying /goodnight."
 author: AlphaAlex115
+website: www.minecraftoffline.net
 
 commands:
   goodnight:
@@ -12,3 +13,8 @@ commands:
     aliases: [gn]
     permission: goodnight.use
     permission-message: "You don't have permission to use the goodnight command."
+
+permissions:
+  goodnight.use:
+    description: Allows the player to use the goodnight command
+    default: true

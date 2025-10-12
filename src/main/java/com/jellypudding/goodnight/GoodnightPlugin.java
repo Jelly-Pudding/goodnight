@@ -28,6 +28,11 @@ public final class GoodnightPlugin extends JavaPlugin implements Listener {
         saveDefaultConfig();
         loadConfigValues();
         getServer().getPluginManager().registerEvents(this, this);
+
+        // Initialise bStats
+        int pluginId = 27564;
+        new Metrics(this, pluginId);
+
         getLogger().info("Goodnight plugin has been enabled.");
     }
 
